@@ -1,0 +1,16 @@
+{
+  "name": "saber-workshop-ethereum",
+  "version": "1.0.0",
+  "description": "Workshop ministrado na SABER 2019",
+  "main": "index.js",
+  "scripts": {
+    "start": "browser-sync start --server --files *.html js/*.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "capaci",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "browser-sync": "^2.26.7"
+  }
+}
