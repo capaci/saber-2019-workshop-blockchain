@@ -23,6 +23,12 @@
 	},
 	{
 		"anonymous": false,
+		"inputs": [],
+		"name": "Finish",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
 		"inputs": [
 			{
 				"indexed": false,

@@ -11,6 +11,9 @@ let $userBalance = document.querySelector('#user-balance')
 let $answersDescriptions = document.querySelectorAll('.answer-description-title')
 let $answersResults = document.querySelectorAll('.votes-counter')
 let $voteButtons = document.querySelectorAll('.button-vote')
+let $questionSection = document.querySelector('#section-question')
+let $finishVotingButton = document.querySelector('#button-finish-voting')
+let $finishVotingAlert = document.querySelector('#alert-finished-voting')
 
 
 /**
@@ -43,8 +46,8 @@ window.addEventListener('load', async () => {
 })
 
 const render = async () => {
-    renderUserInfo()
-    renderVotingInfo()
+    await renderUserInfo()
+    await renderVotingInfo()
 }
 
 const renderUserInfo = async () => {
@@ -70,7 +73,20 @@ const renderVotingInfo = async () => {
     updateAnswerDescriptionDOM(answerId, answerDescription)
     updateAnswerResultDOM(answerId, answerResult)
 
+    let opened = await getOpened(contract)
+    if (!opened) {
+        $finishVotingAlert.classList.remove('is-hidden')
+        $finishVotingButton.classList.add('is-hidden')
+        $voteButtons.forEach(($el) => $el.classList.add('is-hidden'))
+    } else {
+        let owner = await getOwner(contract)
+        if (userAddress == owner) {
+            $finishVotingButton.classList.remove('is-hidden')
+        }
 
+        $finishVotingAlert.classList.add('is-hidden')
+        $voteButtons.forEach(($el) => $el.classList.remove('is-hidden'))
+    }
 }
 
 const updateUserAddressDOM = address => {
@@ -98,6 +114,10 @@ const setContract = (contractAddress) => {
 }
 
 
+const finishVoting = async (event) => {
+    await sendFinishVotingFromAddress(contract, userAddress)
+}
+
 const vote = async (event) => {
     let $button = event.target
     let { answerId } = $button.dataset
@@ -107,23 +127,30 @@ const vote = async (event) => {
 /**
  * listeners
  */
-$contractAddressForm.addEventListener('submit', (e) => {
+$contractAddressForm.addEventListener('submit', async (e) => {
     e.preventDefault()
-    contractAddress = e.target.elements['input-contract-address'].value
+    let $form = e.target
+    let $button = $form.querySelector('button')
+    $button.classList.add('is-loading')
+    contractAddress = $form.elements['input-contract-address'].value
     setContract(contractAddress)
     addContractEventListeners()
-    render()
+    await render()
+    $button.classList.remove('is-loading')
+    $questionSection.classList.remove('is-hidden')
 })
+
+$finishVotingButton.addEventListener('click', finishVoting)
 
 $voteButtons.forEach($button => $button.addEventListener('click', vote))
 
-const addContractEventListeners = () => contract.events.Vote().on('data', renderVotingInfo)
+const addContractEventListeners = () => contract.events.allEvents().on('data', renderVotingInfo)
 
 /**
  * no side-effects
  */
 const getAddressBalance = async (address) => {
-    let result =  await web3.eth.getBalance(address)
+    let result = await web3.eth.getBalance(address)
     return web3.utils.fromWei(result)
 }
 
@@ -131,10 +158,16 @@ const getAnswer = async (contract, answerId) => await contract.methods.answers(a
 
 const getAnswerResult = async (contract, answerId) => await contract.methods.counter(answerId).call()
 
+const getOpened = async (contract) => await contract.methods.opened().call()
+
 const getQuestion = async (contract) => await contract.methods.question().call()
+
+const getOwner = async (contract) => await contract.methods.owner().call()
 
 const getUserAddress = async () => (await web3.eth.getAccounts())[0]
 
 const getWinningAnswer = async (contract) => await contract.methods.question().call()
 
-const sendVoteFromAddress = async (contract, answerId, address) => await contract.methods.vote(answerId).send({from: address})
+const sendFinishVotingFromAddress = async (contract, address) => await contract.methods.finish().send({ from: address })
+
+const sendVoteFromAddress = async (contract, answerId, address) => await contract.methods.vote(answerId).send({ from: address })

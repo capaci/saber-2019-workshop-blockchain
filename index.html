@@ -38,14 +38,14 @@
             </a>
 
             <div class="navbar-dropdown">
-              <a class="navbar-item">
+              <a href="https://solidity.readthedocs.io" class="navbar-item" target="_blank">
                 Documentação do solidity
               </a>
               <hr class="navbar-divider">
-              <a class="navbar-item">
+              <a class="navbar-item" target="_blank">
                 Apresentação do workshop
               </a>
-              <a class="navbar-item">
+              <a class="navbar-item" target="_blank">
                 Apresentação da palestra
               </a>
             </div>
@@ -77,7 +77,7 @@
                       </label>
                       <div class="control">
                         <input class="input" id="input-contract-address" type="text" placeholder="0x19af..."
-                          value="0xf0e8990ad70c8576d5d964f358b809f385258ce7">
+                          value="0x0336f1371733826528F72ADb4dd63FE76Dc0a374">
                       </div>
                     </div>
 
@@ -118,10 +118,19 @@
     <div class="container">
       <div class="columns">
         <div class="column">
+
+          <div id="alert-finished-voting" class="notification is-danger is-hidden">
+            Esta votação já foi encerrada
+          </div>
+          <button id="button-finish-voting" class="button is-danger is-fullwidth is-medium is-hidden" style="margin-bottom: 1.5rem;">
+            Finalizar esta votação
+          </button>
+
           <div class="tile is-ancestor">
             <div class="tile">
               <div class="tile is-parent">
                 <article class="tile is-child notification is-info">
+
                   <h2 id="question-description" class="title">Pergunta?</h2>
                   <div class="tile">
                     <div class="tile is-parent">

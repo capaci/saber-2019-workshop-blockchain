@@ -17,6 +17,7 @@ contract Voting {
     uint256[] public counter = [0, 0];
     uint256 public total = 0;
 
+    event Finish();
     event Vote(address user, uint8 answer);
 
     // Create a new voting with two options
