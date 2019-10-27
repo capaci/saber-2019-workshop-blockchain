@@ -17,6 +17,8 @@ contract Voting {
     uint256[] public counter = [0, 0];
     uint256 public total = 0;
 
+    event Vote(address user, uint8 answer);
+
     // Create a new voting with two options
     constructor(string memory _question, string memory _answer0, string memory _answer1) public {
     }

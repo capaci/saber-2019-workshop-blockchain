@@ -111,10 +111,13 @@ $contractAddressForm.addEventListener('submit', (e) => {
     e.preventDefault()
     contractAddress = e.target.elements['input-contract-address'].value
     setContract(contractAddress)
+    addContractEventListeners()
     render()
 })
 
 $voteButtons.forEach($button => $button.addEventListener('click', vote))
+
+const addContractEventListeners = () => contract.events.Vote().on('data', renderVotingInfo)
 
 /**
  * no side-effects
