@@ -10,6 +10,7 @@ let $userAddress = document.querySelector('#user-address')
 let $userBalance = document.querySelector('#user-balance')
 let $answersDescriptions = document.querySelectorAll('.answer-description-title')
 let $answersResults = document.querySelectorAll('.votes-counter')
+let $voteButtons = document.querySelectorAll('.button-vote')
 
 
 /**
@@ -97,6 +98,12 @@ const setContract = (contractAddress) => {
 }
 
 
+const vote = async (event) => {
+    let $button = event.target
+    let { answerId } = $button.dataset
+    await sendVoteFromAddress(contract, answerId, userAddress)
+}
+
 /**
  * listeners
  */
@@ -107,6 +114,7 @@ $contractAddressForm.addEventListener('submit', (e) => {
     render()
 })
 
+$voteButtons.forEach($button => $button.addEventListener('click', vote))
 
 /**
  * no side-effects
@@ -125,3 +133,5 @@ const getQuestion = async (contract) => await contract.methods.question().call()
 const getUserAddress = async () => (await web3.eth.getAccounts())[0]
 
 const getWinningAnswer = async (contract) => await contract.methods.question().call()
+
+const sendVoteFromAddress = async (contract, answerId, address) => await contract.methods.vote(answerId).send({from: address})
