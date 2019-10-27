@@ -5,8 +5,11 @@ let contractAddress = null
 let web3 = null
 
 let $contractAddressForm = document.querySelector('#form-contract-address')
+let $questionDescription = document.querySelector('#question-description')
 let $userAddress = document.querySelector('#user-address')
 let $userBalance = document.querySelector('#user-balance')
+let $answersDescriptions = document.querySelectorAll('.answer-description-title')
+let $answersResults = document.querySelectorAll('.votes-counter')
 
 
 /**
@@ -38,20 +41,55 @@ window.addEventListener('load', async () => {
     await renderUserInfo()
 })
 
-
-const renderUserInfo = async () => {
-    let userAddress = await getUserAddress()
-    updateUserAddress(userAddress)
-    let userBalance = await getAddressBalance(userAddress)
-    updateUserBalance(userBalance)
+const render = async () => {
+    renderUserInfo()
+    renderVotingInfo()
 }
 
-const updateUserAddress = async (address) => {
+const renderUserInfo = async () => {
+    userAddress = await getUserAddress()
+    updateUserAddressDOM(userAddress)
+    let userBalance = await getAddressBalance(userAddress)
+    updateUserBalanceDOM(userBalance)
+}
+
+const renderVotingInfo = async () => {
+    let question = await getQuestion(contract)
+    updateQuestionDescriptionDOM(question)
+
+    let answerId = 0
+    let answerDescription = await getAnswer(contract, answerId)
+    let answerResult = await getAnswerResult(contract, answerId)
+    updateAnswerDescriptionDOM(answerId, answerDescription)
+    updateAnswerResultDOM(answerId, answerResult)
+
+    answerId = 1
+    answerDescription = await getAnswer(contract, answerId)
+    answerResult = await getAnswerResult(contract, answerId)
+    updateAnswerDescriptionDOM(answerId, answerDescription)
+    updateAnswerResultDOM(answerId, answerResult)
+
+
+}
+
+const updateUserAddressDOM = address => {
     $userAddress.innerHTML = address
 }
 
-const updateUserBalance = async (balance) => {
+const updateUserBalanceDOM = balance => {
     $userBalance.innerHTML = balance
+}
+
+const updateQuestionDescriptionDOM = questionDescription => {
+    $questionDescription.innerHTML = questionDescription
+}
+
+const updateAnswerDescriptionDOM = (id, answerDescription) => {
+    $answersDescriptions[id].innerHTML = answerDescription
+}
+
+const updateAnswerResultDOM = (id, answerResult) => {
+    $answersResults[id].innerHTML = answerResult
 }
 
 const setContract = (contractAddress) => {
@@ -65,17 +103,25 @@ const setContract = (contractAddress) => {
 $contractAddressForm.addEventListener('submit', (e) => {
     e.preventDefault()
     contractAddress = e.target.elements['input-contract-address'].value
-    console.log('a', e.target.elements['input-contract-address'])
     setContract(contractAddress)
+    render()
 })
 
 
 /**
  * no side-effects
  */
-const getUserAddress = async () => (await web3.eth.getAccounts())[0]
-
 const getAddressBalance = async (address) => {
     let result =  await web3.eth.getBalance(address)
     return web3.utils.fromWei(result)
 }
+
+const getAnswer = async (contract, answerId) => await contract.methods.answers(answerId).call()
+
+const getAnswerResult = async (contract, answerId) => await contract.methods.counter(answerId).call()
+
+const getQuestion = async (contract) => await contract.methods.question().call()
+
+const getUserAddress = async () => (await web3.eth.getAccounts())[0]
+
+const getWinningAnswer = async (contract) => await contract.methods.question().call()
