@@ -56,8 +56,16 @@ git clone git@github.com:capaci/saber-2019-workshop-blockchain.git
 
 Então você precisará rodar um servidor web dentro do diretório. Um dos modos mais fáceis de se fazer isso é utilizando o seguinte comando:
 
+No Python 2.x:
+
 ```
 python -m SimpleHTTPServer
+```
+
+No Python 3.x:
+
+```
+python -m http.server
 ```
 
 E o projeto estará disponível no endereço http://localhost:8000.
